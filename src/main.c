@@ -1,4 +1,3 @@
-/* Includes */
 #include "stm32f4xx.h"
 #include "stm32f4_discovery.h"
 
@@ -42,7 +41,8 @@ uint8_t W[5] = {0, 0, 0, 0, 0};                 //keep this array global
 uint32_t tword;
 
 void AD9850_ParallelSend(uint32_t freq){
-	tword = ((freq/100) * 3436);            //tuning word calculation
+	tword = (freq*34.36);            //tuning word calculation
+
 	W[4] = tword;                              //converting to 5words*8bits
 	W[3] = tword >> 8;
 	W[2] = tword >> 16;
@@ -60,14 +60,21 @@ void AD9850_ParallelSend(uint32_t freq){
 
 int main(void)
 {
-	uint32_t frequency = (150000);            //desired frequency input in Hz
+	uint32_t frequency = (20);            //desired frequency input in Hz
 	GPIOinit();                               //initialize the GPIO
 	AD9850_reset();                           //Reset the DDS
-
-	while(1) {
 	AD9850_ParallelSend(frequency);           //Use this to Program the AD9850
-	//for (int d = 0; d<50000;d++);          //Waste some time (optional)
+
+	for (uint32_t i = 2; i < 4000000; ++i)
+	{
+		frequency = (i*10);
+		AD9850_ParallelSend(frequency);
+
+		//for (int j = 0; j <5; ++j);
 	}
+	//while(1) {
+	//for (int d = 0; d<50000;d++);          //Waste some time (optional)
+	//}
 
 }
 
